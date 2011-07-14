@@ -21,32 +21,30 @@ require 'blinky/time_util'
 
 module Blinky
   class Project
-    attr_reader :url, :page
-  
+    attr_reader :url, :page, :watchers
+    
     def initialize url, interval
+      Blinky.log.debug 'init project %s' % url
       @url = url
       @interval = interval
+      @watchers = []
+    end
+    
+    def on_change &handler
+      @watchers << handler
+    end
+    
+    def run
       refresh
+      EM.add_periodic_timer(@interval) { refresh }
     end
   
     def refresh
+      Blinky.log.debug 'Refreshing project %s' % @url
       @title = @updated = @builds = nil
-      
-      Thread.new do
-        @page = Nokogiri::XML(open(@url))
-        Blinky.log.debug 'Refreshed project %s, found %d builds with status of %s' % [title, builds.length, status]
-      end.join
-      
-      # TODO implement polling refreshes
-      # if @interval
-        # Blinky.log.debug 'sleeping for %d' % @interval
-        # Thread.new do
-        #   Blinky.log.debug 'going to sleep %d' % self.object_id
-        #   sleep @interval
-        #   Blinky.log.debug 'waking up %d' % self.object_id
-        #   refresh
-        # end
-      # end
+      @page = Nokogiri::XML(open(@url))
+      @watchers.each{|w| w.call }
+      Blinky.log.info 'Refreshed project %s, found %d builds with status of %s' % [title, builds.length, status]
     end
     
     def title
@@ -78,10 +76,6 @@ module Blinky
     
     def status
       passing? ? 'passing' : 'failing'
-    end
-    
-    def icon_name
-      passing? ? 'green' : 'red'
     end
   
   end

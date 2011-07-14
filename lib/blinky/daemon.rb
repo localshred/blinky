@@ -11,19 +11,29 @@ module Blinky
       4-bigtuna-dev
     ).freeze
     
-    DEFAULT_POLL = 300 # seconds
-    DEFAULT_LOG_FILE = 'blinky.log' # seconds
+    DEFAULT_POLL = 10 # seconds
+    DEFAULT_LOG_FILE = '/code/src/blinky/blinky.log'
     SEPARATOR = 'SEP'
   
-    def initialize
-      load_config
-      build_projects
-      show_build_stats
+    def initialize *args
+      EM.schedule do
+        load_config
+        build_projects(*args)
+        
+        on_restart do
+          Blinky.log.debug 'Restarting app...'
+          load_config
+          @projects.each do |project|
+            project.refresh
+          end
+        end
+        
+        EM.add_periodic_timer(@config[:poll_interval]+10) do
+          log_build_stats
+        end
+      end
     end
     
-    # Thin daemonizer needs this
-    def name; 'Blinky'; end
-  
     def load_config
       @config = {}
       data = YAML.load_file(File.expand_path('~/.blinky')) rescue Hash.new
@@ -37,7 +47,8 @@ module Blinky
       Blinky.log.debug @config.inspect
     end
   
-    def build_projects
+    def build_projects *args
+      @device = Blinky::Device.new(args[0])
       @projects = []
       url_string = [@config[:url], BT_URL_PATTERN].join('/')
       Blinky.log.debug 'url_string = %s' % url_string
@@ -45,15 +56,22 @@ module Blinky
       @config[:projects].each do |feed|
         next if feed == SEPARATOR
         Blinky.log.debug 'Configuring project %s' % feed
-        @projects << Blinky::Project.new(url_string % feed, @config[:poll_interval])
+        project = Blinky::Project.new(url_string % feed, @config[:poll_interval])
+        @projects << project
+        @device.register(project)
+        project.run
       end
     end
     
-    def show_build_stats
+    def log_build_stats
       count = @projects.count.to_f
       passing = @projects.select{|p| p.passing? }.count.to_f
       ratio = (passing / count) * 100
       Blinky.log.info '%d%% Passing (%d of %d)' % [ratio.to_i, passing.to_i, count.to_i]
     end
+    
+    # Thin daemonizer needs these
+    def name; 'blinky'; end
+    def log(*params); Blinky.log.info(*params) rescue STDOUT.puts(*params); end
   end
 end

@@ -7,6 +7,7 @@ $LOAD_PATH.push(File.expand_path('.', File.dirname(__FILE__)))
 
 module Blinky
   autoload :Daemon, 'blinky/daemon'
+  autoload :Device, 'blinky/device'
   autoload :Project, 'blinky/project'
   autoload :Build, 'blinky/build'
   autoload :TimeUtil, 'blinky/time_util'
@@ -19,7 +20,9 @@ module Blinky
   def self.log; @log; end
 end
 
-blinky = Blinky::Daemon.new
-blinky.pid_file = 'blinky.pid'
-blinky.log_file = 'blinky.log'
+blinky = Blinky::Daemon.new(*ARGV)
+blinky.pid_file = '/code/src/blinky/blinky.pid'
+blinky.log_file = '/code/src/blinky/blinky.log'
 blinky.daemonize
+
+EM.run
