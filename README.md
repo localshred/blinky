@@ -1,0 +1,1 @@
+To run blinky: `rvm 1.9.2-p180@blinky exec ruby lib/blinky.rb /dev/the.device.name`

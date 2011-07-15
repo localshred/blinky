@@ -21,8 +21,8 @@ module Blinky
 end
 
 blinky = Blinky::Daemon.new(*ARGV)
-blinky.pid_file = '/code/src/blinky/blinky.pid'
-blinky.log_file = '/code/src/blinky/blinky.log'
+blinky.pid_file = 'tmp/blinky.pid'
+blinky.log_file = 'tmp/blinky.log'
 blinky.daemonize
 
 EM.run

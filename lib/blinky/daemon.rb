@@ -12,7 +12,7 @@ module Blinky
     ).freeze
     
     DEFAULT_POLL = 10 # seconds
-    DEFAULT_LOG_FILE = '/code/src/blinky/blinky.log'
+    DEFAULT_LOG_FILE = 'tmp/blinky.log'
     SEPARATOR = 'SEP'
   
     def initialize *args
@@ -36,7 +36,7 @@ module Blinky
     
     def load_config
       @config = {}
-      data = YAML.load_file(File.expand_path('~/.blinky')) rescue Hash.new
+      data = YAML.load_file('config.yml') rescue Hash.new
       
       @config[:url] = data.fetch('url') { BT_DOMAIN }
       @config[:projects] = data.fetch('projects') { BT_PROJECTS }
