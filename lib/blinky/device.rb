@@ -35,11 +35,11 @@ module Blinky
       @projects.each_slice(NUM_REGISTERS) do |chunk|
         byte = 0
         chunk.each{|p| byte = (byte << 2) | (p.passing? ? PASS_MASK : FAIL_MASK) }
-        byte = byte << ((NUM_REGISTERS - chunk.size) * 2) if chunk.size < NUM_REGISTERS
-        bytes << byte
+        bytes.unshift(byte)
       end
-      byte_str = bytes.map{|b| b.chr }.join
+      byte_str = bytes.map{|b| (b ^ 0xFF).chr }.join
       Blinky.log.debug('WRITING BYTES -> %s' % byte_str)
+      Blinky.log.debug('WRITING BITS -> %s' % byte_str.unpack('B*'))
       @sp.write(byte_str)
     end
     
