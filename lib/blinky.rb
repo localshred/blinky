@@ -12,7 +12,7 @@ module Blinky
   autoload :Build, 'blinky/build'
   autoload :TimeUtil, 'blinky/time_util'
   
-  def self.configure_logger(path, level=Logger::INFO)
+  def self.configure_logger(path, level=Logger::DEBUG)
     @log = Logger.new(path)
     @log.level = level if level
   end

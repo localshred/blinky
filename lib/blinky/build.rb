@@ -3,15 +3,16 @@ require 'blinky/time_util';
 
 =begin
   <entry>
-    <id>tag:builder.bigtuna.appelier.com,2005:Build/97</id>
-    <published>2011-04-13T21:07:07Z</published>
-    <updated>2011-04-13T21:08:53Z</updated>
-    <link type="text/html" href="http://builder.bigtuna.appelier.com/builds/97-bigtuna-build-number-37-at-april-13-2011-21-07" rel="alternate"/>
-    <title>Build #37 @ April 13, 2011 21:07 - SUCCESS</title>
-    <content>Version 0.1.4</content>
-    <updated>2011-04-13 21:08:53 UTC</updated>
+    <id>tag:ci.moneydesktop.com,2005:Build/1864</id>
+    <published>2011-12-15T22:52:32Z</published>
+    <updated>2011-12-15T22:53:50Z</updated>
+    <link rel="alternate" type="text/html" href="http://ci.moneydesktop.com/builds/1864-atlas-master-build-number-120-at-december-15-2011-22-52"/>
+    <title>Build #120 @ December 15, 2011 22:52</title>
+    <status>status_build_ok</status>
+    <content>removed delegators and unified the routes</content>
+    <updated>2011-12-15 22:53:50 UTC</updated>
     <author>
-      <name>Michal Bugno</name>
+      <name>Tracey Eubanks</name>
     </author>
   </entry>
 =end
@@ -35,11 +36,15 @@ module Blinky
     def original_title
       @original_title ||= @entry.at_css('title').children.to_s
     end
+    
+    def status
+      @status ||= @entry.at_css('status').children.to_s
+    end
   
     def title
       @title ||= begin
         t = original_title.dup
-        match = t.match(/Build (\#\d+) \@ [^-]+ - (SUCCESS|FAILED)/)
+        match = t.match(/Build (\#\d+) \@ [^-]+/)
         if match
           t = '%s - %s' % [match[1], TimeUtil.relative_time(updated)]
         end
@@ -52,11 +57,15 @@ module Blinky
     end
     
     def failed?
-      original_title =~ /FAILED$/
+      !building? && !succeeded?
+    end
+    
+    def building?
+      %w(status_build_in_queue status_build_in_progress).include?(status)
     end
     
     def succeeded?
-      original_title =~ /SUCCESS$/
+      status == 'status_build_ok'
     end
     
     def icon_name

@@ -70,8 +70,12 @@ module Blinky
       builds.first.failed?
     end
     
+    def building?
+      builds.first.building?
+    end
+    
     def passing?
-      !failing?
+      builds.first.succeeded?
     end
     
     def status
