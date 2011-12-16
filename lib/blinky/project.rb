@@ -21,6 +21,9 @@ require 'blinky/time_util'
 
 module Blinky
   class Project
+    
+    BUILD_INTERVAL = 30
+    
     attr_reader :url, :page, :watchers
     
     def initialize url, interval
@@ -36,7 +39,11 @@ module Blinky
     
     def run
       refresh
-      EM.add_periodic_timer(@interval) { refresh }
+      EM.add_periodic_timer(poll_interval) { refresh }
+    end
+    
+    def poll_interval
+      building? ? BUILD_INTERVAL : @interval
     end
   
     def refresh

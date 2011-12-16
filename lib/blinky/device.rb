@@ -14,7 +14,7 @@ module Blinky
     NUM_REGISTERS = 4
     PASS_MASK = 1 # 00000001
     FAIL_MASK = 2 # 00000010
-    BUILD_MASK = 3 # 00000011
+    BUILD_MASK = 0 # 00000000
     
     def initialize(device_name)
       Blinky.log.debug("device_name -> %s" % device_name)
