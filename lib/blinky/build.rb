@@ -3,16 +3,16 @@ require 'blinky/time_util';
 
 =begin
   <entry>
-    <id>tag:ci.moneydesktop.com,2005:Build/1864</id>
+    <id>tag:ci.mycompany.com,2005:Build/1864</id>
     <published>2011-12-15T22:52:32Z</published>
     <updated>2011-12-15T22:53:50Z</updated>
-    <link rel="alternate" type="text/html" href="http://ci.moneydesktop.com/builds/1864-atlas-master-build-number-120-at-december-15-2011-22-52"/>
+    <link rel="alternate" type="text/html" href="http://ci.mycompany.com/builds/1864-repo-master-build-number-120-at-december-15-2011-22-52"/>
     <title>Build #120 @ December 15, 2011 22:52</title>
     <status>status_build_ok</status>
     <content>removed delegators and unified the routes</content>
     <updated>2011-12-15 22:53:50 UTC</updated>
     <author>
-      <name>Tracey Eubanks</name>
+      <name>BJ Neilsen</name>
     </author>
   </entry>
 =end
