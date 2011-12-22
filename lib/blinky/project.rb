@@ -51,6 +51,9 @@ module Blinky
       @title = @updated = @builds = nil
       @page = Nokogiri::XML(open(@url))
       @watchers.each{|w| w.call }
+    rescue
+      Blinky.log.error 'Unable to refresh project %s: %s' % [title, $!.message]
+    else
       Blinky.log.info 'Refreshed project %s, found %d builds with status of %s' % [title, builds.length, status]
     end
     
